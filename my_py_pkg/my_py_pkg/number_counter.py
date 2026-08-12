@@ -11,8 +11,8 @@ class NumberCounterNode(Node):
         self.number = 0
         self.subscribers_ = self.create_subscription(Int64, 'number', self.callback, 10)
         self.publishers_ = self.create_publisher(Int64, 'number_count', 10)
-        self.services_ = self.create_service(SetBool, 'reset_counter', self.reset_counter_callback)
         self.timers_ = self.create_timer(0.5, self.publish_count)
+        self.service_server_ = self.create_service(SetBool, 'reset_counter', self.reset_counter_callback)
 
     def callback(self, msg):
         self.number = msg.data
@@ -21,12 +21,19 @@ class NumberCounterNode(Node):
     def publish_count(self):
         count_msg = Int64()
         count_msg.data = self.number + self.counter
-        self.counter += 2
+        self.counter += 1
         self.publishers_.publish(count_msg)
 
-    def reset_counter_callback(self, request, response):
-        self.counter = 0
-        response.success = True
+    def reset_counter_callback(self, request: SetBool.Request, response: SetBool.Response):
+        if request.data:
+            self.counter = 0
+            response.success = True
+            response.message = 'Counter reset to zero.'
+            self.get_logger().info('Counter has been reset.')
+        else:
+            response.success = False
+            response.message = 'Counter not reset.'
+            self.get_logger().info('Counter reset request denied.')
         return response
 
 def main(args=None):
