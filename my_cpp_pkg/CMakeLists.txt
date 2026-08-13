@@ -9,7 +9,6 @@ endif()
 find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(example_interfaces REQUIRED)
-find_package(my_robot_interfaces REQUIRED)
 
 if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)
