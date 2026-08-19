@@ -9,7 +9,7 @@ import random
 class TurtleSpawnerNode(Node):
     def __init__(self):
         super().__init__('turtle_spawner')
-        self.declare_parameter("timer_period", 1.0)
+        self.declare_parameter("timer_period", 0.1)
         self.timer_period = self.get_parameter("timer_period").value
 
         self.turtle_lx = []
@@ -39,8 +39,8 @@ class TurtleSpawnerNode(Node):
     def call_turtle_spawner(self):
         
         while len(self.turtle_lx) < 5:
-            x = random.randint(0,1000)/100
-            y = random.randint(0,1000)/100
+            x = random.random()*10.5
+            y = random.random()*10.5
 
             self.turtle_lx.append(x)
             self.turtle_ly.append(y)
@@ -54,9 +54,13 @@ class TurtleSpawnerNode(Node):
         msg.turtles_x = self.turtle_lx.copy()
         msg.turtles_y = self.turtle_ly.copy()
 
+
         self.publisher_.publish(msg)
 
     def process_notification(self, request, response):
+
+        self.get_logger().info(f"x={self.turtle_lx}, y={self.turtle_ly}")
+        
         kill_req = Kill.Request()
         kill_req.name = self.turtle_names[request.p]
         self.kill_client.call_async(kill_req)
@@ -64,8 +68,6 @@ class TurtleSpawnerNode(Node):
         del self.turtle_lx[request.p]
         del self.turtle_ly[request.p]
         del self.turtle_names[request.p]
-
-        self.call_turtle_spawner()
 
         response.status = True
         self.get_logger().info(f"Position of killed Turtle: {request.p}")

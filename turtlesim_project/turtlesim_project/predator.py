@@ -22,7 +22,7 @@ class PredatorNode(Node):
     def call_predator(self, msg):
         self.predator = msg
 
-        self.get_logger().info('Infomation about Position of Predator is stored')
+        # self.get_logger().info('Infomation about Position of Predator is stored')
 
     def call_pos(self, msg: Position):
         self.turtles_x = msg.turtles_x
@@ -45,7 +45,7 @@ class PredatorNode(Node):
 
     def callback_move(self, future, request):
         response = future.result()
-        self.get_logger().info(f"Is Target Killed: {response.status}")
+        self.get_logger().info(f"A goal has been set: {response.status}")
 
 def main(args=None):
     rclpy.init(args=args)
